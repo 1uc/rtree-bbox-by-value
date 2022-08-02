@@ -1,0 +1,135 @@
+READ of size 8 at 0x7ffc7a68e7d0 thread T0
+    #0 0x5633e41c06d2 in [...] /usr/include/boost/geometry/geometries/point.hpp:290:27
+
+      static constexpr CoordinateType get(
+          model::point<CoordinateType, DimensionCount, CoordinateSystem> const& p)
+      {
+          return p.template get<Dimension>(); # l290
+      }
+
+
+    #1 0x5633e41c0694 in [...] /usr/include/boost/geometry/core/access.hpp:169:16
+    #2 0x5633e41c0668 in [...] /usr/include/boost/geometry/core/access.hpp:283:12
+
+      template <std::size_t Dimension, typename Geometry>
+      constexpr inline typename coordinate_type<Geometry>::type get(Geometry const& geometry, /* ... */)
+      {
+          typedef core_dispatch::access < /* .. */ > coord_access_type;
+          return coord_access_type::get(geometry); // l283
+      }
+
+    #3 0x5633e41c0640 in [...] /usr/include/boost/geometry/geometries/box.hpp:211:16
+
+      static constexpr coordinate_type get(model::box<Point> const& b)
+      {
+          return geometry::get<Dimension>(b.min_corner()); // l211
+      }
+
+
+    #4 0x5633e41c0614 in [...] /usr/include/boost/geometry/core/access.hpp:98:16
+    #5 0x5633e41c05d8 in [...] /usr/include/boost/geometry/core/access.hpp:350:12
+    #6 0x5633e41e430d in [...] /usr/include/boost/geometry/index/detail/bounded_view.hpp:137:17
+
+      template <typename BoxIn, typename Box, typename Strategy, typename CSTag>
+      struct bounded_view_base<BoxIn, Box, Strategy, box_tag, box_tag, CSTag>
+      {
+      public:
+          typedef typename geometry::coordinate_type<Box>::type coordinate_type;
+
+          bounded_view_base(BoxIn const& box, Strategy const& )
+              : m_box(box)
+          {}
+
+          template <std::size_t Dimension>
+          inline coordinate_type get_min() const
+          {
+              return boost::numeric_cast<coordinate_type>(
+                      geometry::get<min_corner, Dimension>(m_box) ); // l137
+          }
+
+          /* ... */
+
+      private:
+          BoxIn const& m_box;
+      };
+
+
+    #7 0x5633e41e42c4 in [...] /usr/include/boost/geometry/index/detail/bounded_view.hpp:256:27
+
+      template <typename Geometry, typename Box, typename Strategy, typename Tag, std::size_t Dimension>
+      struct indexed_access<index::detail::bounded_view<Geometry, Box, Strategy, Tag, box_tag>,
+                            min_corner, Dimension>
+      {
+          typedef index::detail::bounded_view<Geometry, Box, Strategy, Tag, box_tag> box_type;
+          typedef typename geometry::coordinate_type<Box>::type coordinate_type;
+
+          static inline coordinate_type get(box_type const& b)
+          {
+              return b.template get_min<Dimension>(); // l256
+          }
+
+          /* ... */
+      };
+
+
+    #8 0x5633e41e42a4 in [...] /usr/include/boost/geometry/core/access.hpp:98:16
+    #9 0x5633e41e3f78 in [...] /usr/include/boost/geometry/core/access.hpp:350:12
+    #10 0x5633e41e3736 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:123:38
+
+      template <typename Elements, typename Parameters, typename Translator, typename Tag, size_t DimensionIndex>
+      struct find_greatest_normalized_separation
+      {
+          typedef typename Elements::value_type element_type;
+          typedef typename rtree::element_indexable_type<element_type, Translator>::type indexable_type;
+          typedef typename coordinate_type<indexable_type>::type coordinate_type;
+
+          typedef std::conditional_t</* ... */> separation_type;
+
+          typedef typename geometry::point_type<indexable_type>::type point_type;
+          typedef geometry::model::box<point_type> bounds_type;
+          typedef index::detail::bounded_view
+              <
+                  indexable_type, bounds_type,
+                  typename index::detail::strategy_type<Parameters>::type
+              > bounded_view_type;
+
+          static inline void apply(Elements const& elements,
+                                   Parameters const& parameters,
+                                   Translator const& translator,
+                                   separation_type & separation,
+                                   size_t & seed1,
+                                   size_t & seed2)
+          {
+              const size_t elements_count = parameters.get_max_elements() + 1;
+              BOOST_GEOMETRY_INDEX_ASSERT(elements.size() == elements_count, "unexpected number of elements");
+              BOOST_GEOMETRY_INDEX_ASSERT(2 <= elements_count, "unexpected number of elements");
+
+              typename index::detail::strategy_type<Parameters>::type const&
+                  strategy = index::detail::get_strategy(parameters);
+
+              // find the lowest low, highest high
+              bounded_view_type bounded_indexable_0(rtree::element_indexable(elements[0], translator),
+                                                    strategy);
+
+              coordinate_type lowest_low = geometry::get<min_corner, DimensionIndex>(bounded_indexable_0); // l123
+
+    #11 0x5633e41e290c in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:296:9
+    #12 0x5633e41e1c35 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:259:9
+    #13 0x5633e41e1895 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:259:9
+    #14 0x5633e41e114a in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:320:5
+    #15 0x5633e41e00ec in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:371:9
+    #16 0x5633e41df3b8 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:187:13
+    #17 0x5633e41de60f in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:405:9
+    #18 0x5633e41de1b0 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:374:13
+    #19 0x5633e41de068 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:626:15
+    #20 0x5633e41ddde4 in [...] /usr/include/boost/variant/variant.hpp:1028:16
+    #21 0x5633e41ddd72 in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:131:24
+    #22 0x5633e41ddc7e in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:157:12
+    #23 0x5633e41dd816 in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:238:5
+    #24 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2337:16
+    #25 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2349:16
+    #26 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2393:22
+    #27 0x5633e41dd5b4 in [...] /usr/include/boost/variant/detail/apply_visitor_unary.hpp:48:51
+    #28 0x5633e41dcd0c in [...] /usr/include/boost/geometry/index/detail/rtree/node/variant_visitor.hpp:51:5
+    #29 0x5633e41dcb05 in [...] /usr/include/boost/geometry/index/rtree.hpp:1661:9
+    #30 0x5633e41b8cb7 in [...] /usr/include/boost/geometry/index/rtree.hpp:858:19
