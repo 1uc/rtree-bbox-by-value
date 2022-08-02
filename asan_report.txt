@@ -1,0 +1,88 @@
+==44313==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ffc7a68e7d0 at pc 0x5633e41c06d3 bp 0x7ffc7a68e630 sp 0x7ffc7a68e628
+READ of size 8 at 0x7ffc7a68e7d0 thread T0
+    #0 0x5633e41c06d2 in [...] /usr/include/boost/geometry/geometries/point.hpp:290:27
+    #1 0x5633e41c0694 in [...] /usr/include/boost/geometry/core/access.hpp:169:16
+    #2 0x5633e41c0668 in [...] /usr/include/boost/geometry/core/access.hpp:283:12
+    #3 0x5633e41c0640 in [...] /usr/include/boost/geometry/geometries/box.hpp:211:16
+    #4 0x5633e41c0614 in [...] /usr/include/boost/geometry/core/access.hpp:98:16
+    #5 0x5633e41c05d8 in [...] /usr/include/boost/geometry/core/access.hpp:350:12
+    #6 0x5633e41e430d in [...] /usr/include/boost/geometry/index/detail/bounded_view.hpp:137:17
+    #7 0x5633e41e42c4 in [...] /usr/include/boost/geometry/index/detail/bounded_view.hpp:256:27
+    #8 0x5633e41e42a4 in [...] /usr/include/boost/geometry/core/access.hpp:98:16
+    #9 0x5633e41e3f78 in [...] /usr/include/boost/geometry/core/access.hpp:350:12
+    #10 0x5633e41e3736 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:123:38
+    #11 0x5633e41e290c in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:296:9
+    #12 0x5633e41e1c35 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:259:9
+    #13 0x5633e41e1895 in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:259:9
+    #14 0x5633e41e114a in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:320:5
+    #15 0x5633e41e00ec in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:371:9
+    #16 0x5633e41df3b8 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:187:13
+    #17 0x5633e41de60f in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:405:9
+    #18 0x5633e41de1b0 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:374:13
+    #19 0x5633e41de068 in [...] /usr/include/boost/geometry/index/detail/rtree/visitors/insert.hpp:626:15
+    #20 0x5633e41ddde4 in [...] /usr/include/boost/variant/variant.hpp:1028:16
+    #21 0x5633e41ddd72 in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:131:24
+    #22 0x5633e41ddc7e in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:157:12
+    #23 0x5633e41dd816 in [...] /usr/include/boost/variant/detail/visitation_impl.hpp:238:5
+    #24 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2337:16
+    #25 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2349:16
+    #26 0x5633e41dd816 in [...] /usr/include/boost/variant/variant.hpp:2393:22
+    #27 0x5633e41dd5b4 in [...] /usr/include/boost/variant/detail/apply_visitor_unary.hpp:48:51
+    #28 0x5633e41dcd0c in [...] /usr/include/boost/geometry/index/detail/rtree/node/variant_visitor.hpp:51:5
+    #29 0x5633e41dcb05 in [...] /usr/include/boost/geometry/index/rtree.hpp:1661:9
+    #30 0x5633e41b8cb7 in [...] /usr/include/boost/geometry/index/rtree.hpp:858:19
+    #31 0x5633e41b84cf in main /home/lucg/git/bbp/rtree-bounding-box/rtree_repro.cpp:59:11
+    #32 0x7f9a8682928f  (/usr/lib/libc.so.6+0x2928f) (BuildId: 60df1df31f02a7b23da83e8ef923359885b81492)
+    #33 0x7f9a86829349 in __libc_start_main (/usr/lib/libc.so.6+0x29349) (BuildId: 60df1df31f02a7b23da83e8ef923359885b81492)
+    #34 0x5633e40bc1e4 in _start /build/glibc/src/glibc/csu/../sysdeps/x86_64/start.S:115
+
+Address 0x7ffc7a68e7d0 is located in stack of thread T0 at offset 80 in frame
+    #0 0x5633e41e337f in [...] /usr/include/boost/geometry/index/detail/rtree/linear/redistribute_elements.hpp:112
+
+  This frame has 11 object(s):
+    [32, 33) 'ref.tmp' (line 118)
+    [48, 56) 'bounded_indexable_0' (line 121)
+    [80, 128) 'ref.tmp8' (line 121) <== Memory access at offset 80 is inside this variable
+    [160, 168) 'lowest_high' (line 127)
+    [192, 200) 'bounded_indexable' (line 131)
+    [224, 272) 'ref.tmp13' (line 131)
+    [304, 312) 'bounded_indexable_hl' (line 151)
+    [336, 384) 'ref.tmp25' (line 151)
+    [416, 424) 'highest_low' (line 153)
+    [448, 456) 'bounded_indexable33' (line 156)
+    [480, 528) 'ref.tmp34' (line 156)
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-use-after-scope /usr/include/boost/geometry/geometries/point.hpp:290:27 in boost::geometry::traits::access<boost::geometry::model::point<double, 3ul, boost::geometry::cs::cartesian>, 0ul, void>::get(boost::geometry::model::point<double, 3ul, boost::geometry::cs::cartesian> const&)
+Shadow bytes around the buggy address:
+  0x10000f4c9ca0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10000f4c9cb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10000f4c9cc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10000f4c9cd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10000f4c9ce0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x10000f4c9cf0: f1 f1 f1 f1 01 f2 00 f2 f2 f2[f8]f8 f8 f8 f8 f8
+  0x10000f4c9d00: f2 f2 f2 f2 f8 f2 f2 f2 f8 f2 f2 f2 f8 f8 f8 f8
+  0x10000f4c9d10: f8 f8 f2 f2 f2 f2 f8 f2 f2 f2 f8 f8 f8 f8 f8 f8
+  0x10000f4c9d20: f2 f2 f2 f2 f8 f2 f2 f2 f8 f2 f2 f2 f8 f8 f8 f8
+  0x10000f4c9d30: f8 f8 f3 f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
+  0x10000f4c9d40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==44313==ABORTING
